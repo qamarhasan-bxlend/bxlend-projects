@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign-Up</title>
+
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+  <input type="checkbox" id="theme-toggle" class="theme-checkbox" />
+  <label for="theme-toggle" class="theme-toggle-slider">
+    <div class="toggle-circle"></div>
+    <div class="sun-icon">☀️</div>
+    <div class="moon-icon">🌙</div>
+  </label>
+
+  <div class="container dark-theme">
+    <header>
+      <div class="logo_wrap">
+        <a href="https://bxlend.com">
+          <img src="/images/Logo.svg" alt="Website Logo" />
+        </a>
+      </div>
+    </header>
+    <div class="error_message">
+      <% if (error) { %>
+        <%= error %>
+          <% } %>
+    </div>
+
+    <div class="form_wrap">
+      <span class="form_title">Create your personal account</span>
+      <form autocomplete="off" action="<%= prefix; %>/interaction/<%= uid; %>/register" method="POST">
+        <div>
+          <label class="label" for="email">Personal email</label>
+          <br />
+          <input required id="email" type="text" name="login" <% if (!params.login_hint) { %>autofocus="on"
+          <% } else { %> value="<%= params.login_hint; %>" <% } %> autocomplete="email" class="input">
+        </div>
+        <div>
+          <label class="label" for="password">Password</label>
+          <br />
+          <input id="password" required type="password" name="password" oninput="validatePassword(this)"
+            autocomplete="new-password" class="input">
+        </div>
+        <div>
+          <label class="label" for="password_confirm">Confirm Password</label>
+          <br />
+          <input id="password_confirm" required type="password" name="password_confirm" oninput="validatePassword(this)"
+            autocomplete="new-password" class="input">
+        </div>
+        <div class="checkbox_wrap">
+          <input id="checkbox" type="checkbox" required>
+          <label class="checkbox" for="checkbox">I have read and agree to <a href="https://www.bxlend.com/term-of-use"
+              target="_blank">terms of service</a> and <a href="https://www.bxlend.com/privacy-policy"
+              target="_blank">privacy policy</a></label>
+        </div>
+        <div class="label_p_wrap">
+          <p class="label_p">Already have an account?&nbsp;
+            <a href="<%= prefix; %>/interaction/<%= uid; %>">Login</a>
+          </p>
+        </div>
+        <div class="h-captcha" data-sitekey="63f048ec-4ebc-4a36-a442-25acd0f09758"></div>
+        <button class="submit_btn">Register</button>
+      </form>
+
+      <div class="bg_wrap">
+        <img src="/images/BgSmall.svg" alt="Background Small" />
+        <img src="/images/BgLarge.svg" alt="Background Large" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function validatePassword(input) {
+      const validPattern = /^[a-zA-Z0-9]*$/;
+      if (!validPattern.test(input.value)) {
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+      }
+    }
+  </script>
+
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+</body>
+
+</html>

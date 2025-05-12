@@ -1,0 +1,27 @@
+.font-size-lg {
+    font-size: 1.75rem;
+}
+
+.font-size-md {
+    font-size: 1.25rem
+}
+
+.font-size-sm {
+    font-size: 1rem;
+}
+
+.content-subtitle {
+    font-size: 1.25rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.content-subcontent {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.color-yellow {
+    color: #ff9900
+}

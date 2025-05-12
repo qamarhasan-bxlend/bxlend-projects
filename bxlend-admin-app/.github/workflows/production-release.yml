@@ -1,0 +1,139 @@
+name: Production Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: echo "CUSTOM_TAG=v${{ github.sha }}" >> $GITHUB_ENV
+      - run: echo ${{ env.CUSTOM_TAG }}
+
+      - name: Changelog
+        id: changelog
+        uses: ardalanamini/auto-changelog@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: rickstaa/action-create-tag@v1
+        id: 'tag_create'
+        with:
+          tag: ${{ env.CUSTOM_TAG }}
+          force_push_tag: true
+          tag_exists_error: false
+          message: 'Release ${{ env.CUSTOM_TAG }}'
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
+          release_name: ${{ env.CUSTOM_TAG }}
+          tag_name: ${{ env.CUSTOM_TAG }}
+
+  github_registry:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Node.js Version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Clean and Install Dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
+
+      - run: echo "CUSTOM_TAG=v${{ github.sha }}" >> $GITHUB_ENV
+      - run: echo ${{ env.CUSTOM_TAG }}
+
+      - name: Ensure TypeScript Config is Correct
+        run: |
+          if grep -q '"jsx":' tsconfig.json; then
+            sed -i 's/"jsx": "[^"]*"/"jsx": "react-jsx"/' tsconfig.json
+          else
+            sed -i '/"compilerOptions": {/a \    "jsx": "react-jsx",' tsconfig.json
+          fi
+          cat tsconfig.json
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Setting-Up Environment File
+        run: |
+          touch .env
+          echo "REACT_APP_PURE_URL=https://api.bxlend.com" >> .env
+          echo "REACT_APP_RESPONSE_TYPE=code" >> .env
+          echo "REACT_APP_GRANT_TYPE=authorization_code" >> .env
+          echo "REACT_APP_AUTH_URL=https://api.bxlend.com" >> .env
+          echo "REACT_APP_SCOPE=offline_access write:user.phone_number read:user.phone_number write:user.email read:user.email read:user.profile write:user.profile write:user.password" >> .env
+          echo "REACT_APP_REDIRECT_URI=${{secrets.PRODUCTION_ADMIN_CLIENT_REDIRECT_URI}}" >> .env
+          echo "REACT_APP_CLIENT_ID=${{secrets.PRODUCTION_ADMIN_CLIENT_ID}}" >> .env
+          echo "REACT_APP_CLIENT_SECRET=${{secrets.PRODUCTION_ADMIN_CLIENT_SECRET}}" >> .env
+
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: btcex-pro/bxlend-admin-app
+          tag_with_ref: false
+          tag_with_sha: false
+          tags: ${{ env.CUSTOM_TAG }}
+
+  deploy:
+    name: Deploy API to DigitalOcean Kubernetes
+    needs:
+      - github_registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: echo "CUSTOM_TAG=v${{ github.sha }}" >> $GITHUB_ENV
+      - run: echo ${{ env.CUSTOM_TAG }}
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Update deployment file
+        run: sed -i 's|<IMAGE>|ghcr.io/btcex-pro/bxlend-admin-app:${{ env.CUSTOM_TAG }}|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set APP_DOMAIN
+        run: sed -i 's|<APP_DOMAIN>|admin.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CLUSTER_ISSUER_NAME
+        run: sed -i 's|<CLUSTER_ISSUER_NAME>|letsencrypt-production|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - run: cat $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-sgp1-production
+
+      - name: Upload registry credentials to Kubernetes
+        run: kubectl create secret docker-registry btcex-admin-registry --docker-server="ghcr.io" --docker-email="kevinng@bxlend.com" --docker-username="kevinng999" --docker-password="${{ secrets.REGISTRY_TOKEN }}" -o yaml --dry-run=client | kubectl replace --force -f -
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Verify deployment
+        run: kubectl rollout status deployment/btcex-admin

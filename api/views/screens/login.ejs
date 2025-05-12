@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign-in</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+  <input type="checkbox" id="theme-toggle" class="theme-checkbox" />
+  <label for="theme-toggle" class="theme-toggle-slider">
+    <div class="toggle-circle"></div>
+    <div class="sun-icon">☀️</div>
+    <div class="moon-icon">🌙</div>
+  </label>
+
+  <div class="container dark-theme">
+    <header>
+      <div class="logo_wrap">
+        <a href="https://bxlend.com">
+          <img src="/images/Logo.svg" alt="Logo" />
+        </a>
+      </div>
+    </header>
+
+    <% if (error) { %>
+      <div class="error_message">
+        <%= error %>
+      </div>
+      <% } %>
+
+        <div class="form_wrap">
+          <span class="form_title">Login to your account</span>
+          <form autocomplete="off" action="<%= prefix; %>/interaction/<%= uid; %>/login" method="POST">
+            <div>
+              <label class="label" for="email">Email</label>
+              <br />
+              <input required id="email" type="email" name="login" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                title="Please enter a valid email address (e.g. user@example.com)" <% if (!params.login_hint) {
+                %>autofocus="on"
+              <% } else { %> value="<%= params.login_hint; %>" <% } %>
+                    class="input"
+                    >
+            </div>
+            <div>
+              <label class="label" for="password">Password</label>
+              <br />
+              <input id="password" type="password" name="password" required <% if (params.login_hint) { %>autofocus="on"
+              <% } %> class="input">
+            </div>
+            <div class="h-captcha" data-sitekey="63f048ec-4ebc-4a36-a442-25acd0f09758"></div>
+            <div class="label_p_wrap">
+              <p class="label_p">Don't have an account?&nbsp;
+                <a href="<%= prefix; %>/interaction/<%= uid; %>/register" class="link">Register</a>
+              </p>
+              <p class="label_p">
+                Forgot your password?&nbsp;
+                <a href="<%= client_uri %>/forgot-password/request-otp" class="link">Reset Password</a>
+              </p>
+            </div>
+            <button class="submit_btn">Login</button>
+          </form>
+          <div class="bg_wrap">
+            <img src="/images/BgSmall.svg" alt="Background Small" />
+            <img src="/images/BgLarge.svg" alt="Background Large" />
+          </div>
+        </div>
+  </div>
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+</body>
+
+</html>

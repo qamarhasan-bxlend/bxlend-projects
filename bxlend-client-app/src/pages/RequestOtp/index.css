@@ -1,0 +1,33 @@
+.form_wrap {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.splitter {
+  font-size: 1.25rem;
+}
+
+.bg_wrap {
+  display: flex;
+  flex-direction: row-reverse;
+  position: fixed;
+  top: 25% !important;
+  left: 60%;
+  height: 28vw;
+}
+
+.bg_small {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+}
+
+@media screen and (max-width: 768px) {
+  .bg_wrap {
+    display: none;
+  }
+
+  .glass-container {
+    width: 100% !important;
+  }
+}

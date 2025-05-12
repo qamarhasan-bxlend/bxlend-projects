@@ -1,0 +1,12 @@
+"use strict";
+
+const BANK_ACCOUNT_STATUS = {
+  VERIFIED: "VERIFIED",
+  SUSPENDED: "SUSPENDED",
+  REJECTED: "REJECTED",
+  UNDER_REVIEW: "UNDER_REVIEW",
+};
+
+module.exports = {
+  BANK_ACCOUNT_STATUS,
+};

@@ -1,0 +1,14 @@
+"use strict";
+
+const SETTING = {
+  MAKER_FEE: "MAKER_FEE",
+  TAKER_FEE: "TAKER_FEE",
+  SPREAD: "SPREAD",
+  // PRESALE_BASE_PRICE: "PRESALE_BASE_PRICE",
+  REFERRAL_REWARD: "REFERRAL_REWARD",
+  // PRESALE_STAGE: "PRESALE_STAGE",
+};
+
+module.exports = {
+  SETTING,
+};

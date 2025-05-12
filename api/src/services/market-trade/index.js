@@ -1,0 +1,1 @@
+exports.updateAllMarketTrades = require('./update.js')

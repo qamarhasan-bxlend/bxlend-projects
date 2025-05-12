@@ -1,0 +1,101 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root,
+.container-fluid {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-fluid {
+  padding: 10rem 3rem 2rem;
+}
+
+.container-fluid.isDark * {
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+ul,
+ol {
+  padding: 0;
+  margin: 0;
+}
+
+/* MEDIA QUERIES */
+
+@media (max-width: 1200px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+/* THEME STYLES */
+
+.container-fluid.isDark,
+select.isDark {
+  background: #333;
+}
+
+select.isDark {
+  background: #fff;
+  color: #111 !important;
+}
+
+tr.isDark th {
+  color: #111 !important;
+}
+
+header.isDark * {
+  color: #fff;
+}
+
+.page-item.disabled > button {
+  background: transparent;
+}
+
+.page-link:hover,
+.page-link:focus {
+  background: transparent;
+  color: auto;
+}
+
+.dropdown-item.isDark {
+  background: #333;
+}
+
+.wallet-action-btn-group.isDark {
+  background: #333;
+}
+
+.dropdown-menu.isDark {
+  background: #fff;
+}
+
+.dropdown-menu.isDark button {
+  color: #111;
+  background: #fff;
+}

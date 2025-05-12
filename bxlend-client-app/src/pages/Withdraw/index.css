@@ -1,0 +1,34 @@
+.withdraw-balance-title {
+  font-weight: 500;
+  line-height: 130%;
+  color: #5c5c5c;
+}
+
+.withdraw-balance-content {
+  font-weight: 500;
+  line-height: 130%;
+  color: #172a4f;
+}
+
+.drop-down {
+  max-height: 18.75rem;
+  overflow-y: scroll;
+}
+
+.drop-down::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.drop-down::-webkit-scrollbar-thumb {
+  background: linear-gradient(270deg, #00feb9 0%, #00fafd 100%);
+}
+
+.drop-down::-webkit-scrollbar-thumb:hover {
+  background: #001131;
+}
+
+.drop-down::-webkit-scrollbar {
+  display: block;
+  background: linear-gradient(270deg, #00feb9 0%, #00fafd 100%);
+  width: 5px;
+}

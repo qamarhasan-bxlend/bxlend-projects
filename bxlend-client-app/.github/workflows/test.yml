@@ -1,0 +1,50 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_VERSION: 20.18.0
+
+    steps:
+      - uses: actions/checkout@v4  # Updated to v4
+
+      - name: Setup Cache
+        uses: actions/cache@v4  # Updated to v4
+        with:
+          path: '**/node_modules'
+          key: ${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4  # Updated to v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install packages
+        run: yarn --pure-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+#      - name: Test
+#        run: npm run test:ci
+
+#      - name: Upload coverage to Codecov
+#        uses: codecov/codecov-action@v3  # Updated to v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          env_vars: NODE_VERSION
+#          fail_ci_if_error: true

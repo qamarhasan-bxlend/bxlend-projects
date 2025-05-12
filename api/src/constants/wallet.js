@@ -1,0 +1,27 @@
+"use strict";
+
+const { MODEL } = require("./model");
+
+const WALLET_KIND = {
+  FIAT: "FIAT",
+  CRYPTO: "CRYPTO",
+  INTERNAL: "INTERNAL",
+};
+
+const WALLET_OWNER = {
+  USER: MODEL.USER,
+  CLIENT: MODEL.CLIENT,
+};
+
+const CRYPTO_WALLET_PLATFORM = {
+  BITGO: "BITGO",
+  CRYPTOAPIS: "CRYPTOAPIS",
+  BXLEND : "BXLEND",
+  VAULTODY: "VAULTODY"
+};
+
+module.exports = {
+  WALLET_KIND,
+  WALLET_OWNER,
+  CRYPTO_WALLET_PLATFORM,
+};

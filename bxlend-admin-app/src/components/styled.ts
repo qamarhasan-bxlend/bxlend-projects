@@ -1,0 +1,99 @@
+import styled from 'styled-components';
+
+export const StyledContainer = styled.div<{ isColumn?: boolean }>`
+  display: flex;
+  flex-direction: ${({ isColumn }) => (isColumn ? 'column' : 'row')};
+  width: 100%;
+  background: #E7EFFF;
+  flex-grow: 1;
+  
+  .hamburger-menu {
+    --x-width: calc(var(--hamburger-height) * 1.41421356237);
+
+    display: none;
+    flex-direction: column;
+    gap: var(--hamburger-gap);
+    width: max-content;
+    position: absolute;
+    top: var(--hamburger-margin);
+    left: var(--hamburger-margin);
+    z-index: 9999;
+    cursor: pointer;
+
+    @media only screen and (max-width: 768px) {
+      display: flex;
+    }
+  }
+
+  .hamburger-menu:has(input:focus-visible)::before,
+  .hamburger-menu:has(input:focus-visible)::after,
+  .hamburger-menu input:focus-visible {
+    border: 1px solid var(--background);
+    box-shadow: 0 0 0 1px var(--foreground);
+  }
+
+  .hamburger-menu::before,
+  .hamburger-menu::after,
+  .hamburger-menu input {
+    content: '';
+    width: var(--bar-width);
+    height: var(--bar-height);
+    background-color: var(--foreground);
+    border-radius: 9999px;
+    transform-origin: left center;
+    transition: opacity var(--animation-timing), width var(--animation-timing), rotate var(--animation-timing),
+      translate var(--animation-timing), background-color var(--animation-timing);
+  }
+
+  .hamburger-menu input {
+    appearance: none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    pointer-events: none;
+  }
+
+  .hamburger-menu:has(input:checked)::before {
+    rotate: 45deg;
+    width: var(--x-width);
+    translate: 0 calc(var(--bar-height) / -2);
+  }
+
+  .hamburger-menu:has(input:checked)::after {
+    rotate: -45deg;
+    width: var(--x-width);
+    translate: 0 calc(var(--bar-height) / 2);
+  }
+
+  .hamburger-menu input:checked {
+    opacity: 0;
+    width: 0;
+  }
+
+  .hamburger-menu:has(input:checked) + aside {
+    translate: 0;
+    color: red;
+    display: flex;
+    position: fixed;
+  }
+`;
+
+export const StyledLogoWrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const StyledHeader = styled.header`
+  width: 100%;
+  border: 3px solid green;
+`;
+
+export const StyledWrap = styled.div`
+  padding: 2rem 1rem;
+  color: #172A4F;
+`;

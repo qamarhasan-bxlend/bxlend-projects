@@ -1,0 +1,30 @@
+.form-control:focus {
+  box-shadow: none;
+}
+
+.form-control-underlined {
+  border-width: 0;
+  border-bottom-width: 1px;
+  border-radius: 0;
+  padding-left: 0;
+}
+
+.form-control::placeholder {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 130%;
+  color: #b6b6b6;
+}
+
+.form-control {
+  color: #111 !important;
+}
+
+.search-box {
+  border-radius: 1rem;
+  flex-wrap: nowrap;
+}
+
+#button-addon4 {
+  color: #888888 !important;
+}

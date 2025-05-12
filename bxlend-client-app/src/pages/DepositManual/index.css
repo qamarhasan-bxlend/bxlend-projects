@@ -1,0 +1,84 @@
+.coin-dropdown-btn {
+  border: 1px solid #00feb9;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3.5rem;
+  border-radius: 0.75rem;
+}
+
+.coin-dropdown-btn:hover {
+  border: 1px solid #00feb9;
+}
+
+.coin-dropdown-btn::after {
+  display: none;
+}
+
+.coin-wallet-info {
+  box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 1.25rem;
+}
+
+.coin-network-info {
+  padding-right: 7.5rem;
+}
+
+.coin-title {
+  color: #172a4f;
+  opacity: 0.69;
+}
+
+.alert {
+  display: none;
+}
+
+.deposit-problem,
+.deposit-faq {
+  padding-left: 2.5rem;
+  padding-right: 14.3rem;
+}
+
+.deposit-problem-content,
+.deposit-faq-item,
+.deposit-learn-more-btn {
+  color: #172a4f;
+  opacity: 0.69;
+}
+
+.deposit-faq-item {
+  text-align: left;
+}
+
+.wallet-address {
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .deposit-problem,
+  .deposit-faq {
+    padding-right: 1.75rem;
+    padding-left: 0.62rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .coin-network-info {
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 578px) {
+  .wallet-address-info img {
+    width: 12.5rem;
+  }
+
+  .coin-wallet-info {
+    box-shadow: none;
+    border-radius: 0;
+  }
+}

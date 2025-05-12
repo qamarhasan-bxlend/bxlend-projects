@@ -1,0 +1,3 @@
+const BASIC_AUTH_CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+
+export default BASIC_AUTH_CLIENT_ID;

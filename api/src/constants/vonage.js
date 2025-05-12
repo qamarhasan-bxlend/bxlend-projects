@@ -1,0 +1,31 @@
+"use strict";
+
+const VONAGE_COMMAND = {
+  CANCEL: "cancel",
+  TRIGGER_NEXT_EVENT: "trigger_next_event",
+};
+
+const VONAGE_VERIFICATION_STATUS = {
+  IN_PROGRESS: "IN_PROGRESS",
+  SUCCESS: "SUCCESS",
+  FAILED: "FAILED",
+  EXPIRED: "EXPIRED",
+  CANCELLED: "CANCELLED",
+};
+
+const VONAGE_FUNCTIONS = {
+  START: "request",
+  SEARCH: "search",
+  CHECK: "check",
+  CANCEL: "cancel",
+  CONTROL: "control"
+};
+
+const VONAGE_VERIFICATION_CODE_LENGTH = 6;
+
+module.exports = {
+  VONAGE_COMMAND,
+  VONAGE_VERIFICATION_STATUS,
+  VONAGE_VERIFICATION_CODE_LENGTH,
+  VONAGE_FUNCTIONS
+};

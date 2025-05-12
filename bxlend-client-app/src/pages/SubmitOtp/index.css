@@ -1,0 +1,41 @@
+.splitter {
+  font-size: 1.25rem;
+}
+
+.bg_wrap {
+  display: flex;
+  flex-direction: row-reverse;
+  position: fixed;
+  top: 20% !important;
+  left: 60%;
+  height: 28vw;
+}
+
+.bg_small {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+}
+
+.icon-toggle {
+  position: absolute;
+  right: 1rem;
+  top: 77%;
+  cursor: pointer;
+  transform: translateY(-77%);
+  transition: transform 0.2s ease, color 0.3s;
+}
+
+.icon-toggle:hover {
+  transform: translateY(-77%) scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+  .bg_wrap {
+    display: none;
+  }
+
+  .glass-container {
+    width: 100% !important;
+  }
+}

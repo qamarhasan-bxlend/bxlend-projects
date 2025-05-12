@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  font-family: Inter-Regular;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::after, ::before, body {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --bar-width: 30px;
+  --bar-height: 5px;
+  --hamburger-gap: 4px;
+  --foreground: #172A4F;
+  --background: #172A4F;
+  --hamburger-margin: 3vh;
+  --animation-timing: 200ms ease-in-out;
+  --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
+}
+
+@font-face {
+  font-family: Inter-Regular;
+  src: url('src/assets/fonts/Inter-Regular.ttf');
+}

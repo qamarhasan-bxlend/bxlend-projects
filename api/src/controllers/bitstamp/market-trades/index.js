@@ -1,0 +1,1 @@
+exports.getCurrencyPairMarketTrades = require('./get')

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&family=Inter:wght@400;500;700&family=Lexend:wght@300;400;500&display=swap');
+    @import url('href="https://fonts.googleapis.com/css2?family=Iceberg&display=swap" rel="stylesheet');
+
+    html {
+      margin: 0;
+      overflow: auto;
+      box-sizing: border-box;
+      overscroll-behavior-x: none;
+      font-size: 16px;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      scroll-behavior: smooth;
+      text-rendering: optimizeSpeed;
+      width: 100%;
+
+      &::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
+      }
+    }
+
+    html,
+    body,
+    #root {
+      height: 100%;
+    }
+
+    ol,
+    ul {
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5vh calc(20px + 1vw);
+      box-shadow: 0 6px 6px -4px rgba(0, 0, 0, 0.25);
+      margin-bottom: 8vh;
+      ;
+    }
+
+    .logo_wrap {
+      display: flex;
+      align-items: center;
+      gap: 2vw;
+    }
+
+    .logo_wrap>img {
+      height: calc(30px + 2vw);
+    }
+
+    .logo_wrap>span {
+      font-family: 'Iceberg';
+    }
+
+    .logo_wrap>span {
+      font-size: calc(10px + 2vw);
+      color: rgba(190, 161, 6, 0.27);
+    }
+
+    .form_title {
+      font-size: calc(16px + 1.6vw);
+      color: #172A4F;
+      font-weight: 700;
+      padding-bottom: 3vh;
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btns_wrap {
+      display: flex;
+      gap: 2vw;
+      margin-bottom: 4vh;
+    }
+
+    .btns_wrap>button {
+      border: none;
+      padding: calc(5px + .35vw) calc(10px + 4vw);
+      border-radius: 40px;
+      font-size: calc(10px + .6vw);
+      font-weight: 600;
+      background: none;
+      transition: .1s ease-in-out;
+      color: #001131;
+    }
+
+    .btns_wrap>button:nth-child(2) {
+      flex-shrink: 0;
+    }
+
+    .btns_wrap>button:hover {
+      background: #00FEB9;
+      cursor: pointer;
+    }
+
+    .label {
+      color: #4E4E4E;
+      padding-bottom: 1.2vh;
+      display: inline-block;
+      font-size: calc(10px + .4vw);
+      font-family: 'Inter', sans-serif;
+    }
+
+    #btn_active {
+      background-color: #00FEB9;
+    }
+
+    input {
+      border-radius: 40px;
+      border: 2px solid #172A4F;
+      padding: 0 1.5vw;
+    }
+
+    .submit_btn {
+      width: 100%;
+      background-color: #9F9F9F;
+      color: #fff;
+      text-align: center;
+      font-weight: 600;
+      border: none;
+      border-radius: 25px;
+      margin-top: 2vh;
+      height: 56px;
+    }
+
+    .form_wrap {
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    form {
+      width: 35%;
+    }
+
+    #email,
+    #password {
+      width: 100%;
+      height: 50px;
+    }
+
+    #email {
+      margin-bottom: 3vh;
+    }
+
+    #password {
+      margin-bottom: 3vh;
+    }
+
+    .checkbox_wrap {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: flex-start;
+      gap: .6vw;
+      padding-bottom: .6vw;
+      font-weight: 400;
+    }
+
+    .checkbox {
+      font-family: 'Inter', sans-serif;
+      color: #4E4E4E;
+      line-height: 20px;
+    }
+
+    .side_btns_wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .side_btns_wrap>span {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+    }
+
+    .splitter {
+      font-size: 20px;
+    }
+
+    .bg_wrap {
+      display: flex;
+      flex-direction: row-reverse;
+      position: fixed;
+      top: 24%;
+      left: 50%;
+      height: 28vw;
+    }
+
+    .bg_wrap>img:nth-child(1) {
+      height: 23vw;
+      margin-top: 5vw;
+    }
+
+    .bg_wrap>img:nth-child(2) {
+      position: relative;
+      bottom: 0;
+      left: 25%;
+    }
+
+    @media screen and (max-width: 1024px) {
+      form {
+        width: 50%;
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      form {
+        width: 80%;
+      }
+
+      .bg_wrap {
+        display: none;
+      }
+
+      #email,
+      #password {
+        height: 40px;
+      }
+
+      .submit_btn {
+        height: 40px;
+      }
+    }
+
+    @media screen and (max-width: 425px) {
+      form {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="logo_wrap">
+        <img src="./public//images/Logo.svg" />
+      </div>
+      <div class="side_btns_wrap">
+        <span>ENG</span>
+        <span class="splitter">|</span>
+        <span>USD</span>
+      </div>
+    </header>
+    <div class="form_wrap">
+      <span class="form_title">Create your personal account.</span>
+      <form>
+        <div class="btns_wrap">
+          <button id="btn_active">Email</button>
+          <button>Phone number</button>
+        </div>
+        <div>
+          <label class="label" for="email">Personal email</label>
+          <br />
+          <input id="email" type="email" />
+        </div>
+        <div>
+          <label class="label" for="password">Password</label>
+          <br />
+          <input id="password" type="password" />
+        </div>
+        <div class="checkbox_wrap">
+          <label class="checkbox" for="checkbox">I have read and agree to terms of service and privacy policy</label>
+          <input id="checkbox" type="checkbox">
+        </div>
+        <button class="submit_btn">Create Personal Account</button>
+      </form>
+      <div class="bg_wrap">
+        <img src="./public/images/BgSmall.svg" />
+        <img src="./public/images/BgLarge.svg" />
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

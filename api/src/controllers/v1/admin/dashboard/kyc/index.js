@@ -1,0 +1,1 @@
+exports.listKycDashboardAdminV1 = require('./list')

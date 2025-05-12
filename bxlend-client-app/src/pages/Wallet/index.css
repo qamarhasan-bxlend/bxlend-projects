@@ -1,0 +1,66 @@
+.wallet-main-part {
+  color: #1b224a;
+}
+
+.wallet-usd-balance {
+  opacity: 0.7;
+}
+
+.wallet-balance-value {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 160%;
+}
+
+.wallet-balance-title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 160%;
+}
+
+.wallet-filter-btn {
+  height: 3.0.75rem;
+  padding-left: 3.12rem;
+  padding-right: 2.5rem;
+  border: 1px solid #00feb9;
+  border-radius: 1.56rem;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 2rem;
+}
+
+.wallet-filter-btn:hover,
+.wallet-filter-btn.active {
+  background: linear-gradient(270deg, #00feb9 0%, #00fafd 100%);
+  border: 1px solid white;
+}
+
+.wallet-action-button {
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  color: #c5a532;
+}
+
+tbody td {
+  font-size: 0.87rem;
+}
+
+table th {
+  font-weight: normal;
+}
+
+.wallet-action-dropdown-btn {
+  padding-left: 3.12rem;
+  padding-right: 3.12rem;
+  border: 1px solid #00feb9!important;
+  border-radius: 1.25rem;
+}
+
+.eye-button {
+  background: white;
+  border: none;
+}

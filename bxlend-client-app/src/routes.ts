@@ -1,0 +1,44 @@
+export const ROUTE_ORDERS = '/orders';
+export const ROUTE_OPEN_ORDERS = '/open-orders';
+export const ROUTE_ORDER_HISTORY = '/order-history';
+export const ROUTE_TRADE_HISTORY = '/trade-history';
+
+export const ROUTE_TRANSACTIONS = '/transactions';
+export const ROUTE_TRANSACTIONS_CRYPTO = '/crypto';
+export const ROUTE_TRANSACTIONS_FIAT = '/fiat';
+
+export const ROUTE_AUTH_CALLBACK = '/auth/callback/*';
+export const ROUTE_MARKET = '/market';
+export const ROUTE_PRESALE = '/presale';
+export const ROUTE_BUY_TOKEN = '/buy-token';
+export const ROUTE_PRESALE_ORDERS = '/presale-orders';
+export const ROUTE_SIGNUP = '/signup';
+export const ROUTE_DEPOSIT = '/deposit';
+export const ROUTE_WITHDRAW = '/withdraw';
+export const ROUTE_TRADE = '/trade';
+export const ROUTE_SPOTLIGHT = '/spotlight/*';
+export const ROUTE_TERMS_OF_USE = '/terms-of-use';
+export const ROUTE_ABOUT_US = '/about-us';
+export const ROUTE_PRIVACY_POLICY = '/privacy-policy';
+export const ROUTE_FORGOT_PW_REQUEST_OTP = '/forgot-password/request-otp';
+export const ROUTE_FORGOT_PW_SUBMIT_OTP = '/forgot-password/submit-otp';
+export const ROUTE_EARLY_REGISTRATION = '/early-registration';
+export const ROUTE_FAQ = '/faq';
+
+export const ROUTE_DASHBOARD = '/dashboard';
+export const ROUTE_WALLET = '/wallet';
+export const ROUTE_ORDERS_ALL = '/orders/*';
+export const ROUTE_UPDATE_PHONE = '/update-phone';
+export const ROUTE_ACCOUNT_CREATED = '/account-created';
+export const ROUTE_SECURITY_VERIFICATION = '/security-verification';
+export const ROUTE_EMAIL_VERIFICATION = '/email-verification';
+export const ROUTE_NOTIFICATIONS = '/notifications';
+export const ROUTE_WITHDRAW_MANUAL = '/withdraw-manual/*';
+export const ROUTE_WITHDRAW_MANUAL_CODE = '/withdraw-manual/:code';
+export const ROUTE_DEPOSIT_MANUAL = '/deposit-manual/*';
+export const ROUTE_DEPOSIT_MANUAL_CODE = '/deposit-manual/:code';
+export const ROUTE_DEPOSIT_ALL = '/deposit/:coin';
+export const ROUTE_WITHDRAW_ALL = '/withdraw/:coin';
+export const ROUTE_TRANSACTIONS_ALL = '/transactions/*';
+export const ROUTE_SETTINGS = '/settings';
+export const ROUTE_CHANGE_PW = '/change-password';

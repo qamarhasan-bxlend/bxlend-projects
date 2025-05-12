@@ -1,0 +1,100 @@
+.market-table {
+  padding: 1.75rem 3.1rem 1.75rem 3.1rem;
+  box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 1.25rem;
+}
+
+.market-search-box {
+  height: 3.75rem;
+  outline: none;
+}
+
+.sort-by ul {
+  width: 3.75rem;
+}
+
+.mobile-search-btn {
+  background: transparent;
+  border: 1px solid #00feb9;
+  border-radius: 1.25rem;
+  color: #172a4f !important;
+}
+
+.market-sort-btn,
+.market-filter-dropdown-btn {
+  border: 1px solid #00feb9;
+  border-radius: 1.25rem;
+}
+
+.market-sort-btn > button,
+.market-filter-dropdown-btn > button {
+  border: none;
+}
+
+.page-link {
+  background: transparent;
+  border: none;
+  color: #172a4f;
+}
+
+.active > .page-link {
+  background: #172a4f;
+  border-radius: 0.62rem;
+}
+
+.market-action-button {
+  background: transparent;
+  border: none;
+  color: #172a4f;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.market-action-button-fav {
+  background: transparent;
+  border: none;
+  color: gold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .market-filter-btn-group {
+    display: none !important;
+  }
+
+  .market-filter-dropdown-btn {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .market-search-box {
+    width: 12.5rem;
+    height: 2.5rem;
+  }
+
+  .pagination {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .market-table {
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .market-search-box {
+    display: none !important;
+  }
+
+  .mobile-search-icon {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 375px) {
+}

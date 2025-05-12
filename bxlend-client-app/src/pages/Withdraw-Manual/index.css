@@ -1,0 +1,18 @@
+.input-wallet-address {
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.69);
+  border-radius: 1rem;
+  height: 3.5rem;
+}
+
+.withdraw-balance-title {
+  font-weight: 500;
+  line-height: 130%;
+  color: #5c5c5c;
+}
+
+.withdraw-balance-content {
+  font-weight: 500;
+  line-height: 130%;
+  color: #172a4f;
+}

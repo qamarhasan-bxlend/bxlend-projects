@@ -1,0 +1,132 @@
+.signup-container {
+  padding-top: 3.12rem;
+  padding-left: 6.25rem;
+  padding-right: 6.25rem;
+}
+.signup-title {
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 5rem;
+  color: #172a4f;
+  padding-top: 6.25rem;
+}
+
+.signup-button-group button {
+  border-radius: 1.75rem;
+  width: 25rem;
+  height: 3.75rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.signup-button-group hr {
+  width: 175px;
+  height: 1px;
+  background: #172a4f;
+  border: none;
+}
+
+.signup-next-btn {
+  background: linear-gradient(270deg, #00feb9 0%, #00fafd 100%);
+  border-radius: 3.12rem;
+  border: none;
+  color: #172a4f;
+}
+
+.signup-next-btn:hover {
+  color: #172a4f;
+}
+
+.signup-google-btn,
+.signup-google-btn:hover {
+  background: transparent;
+  color: #001131;
+  border: 1px solid #00feb9;
+}
+
+.signup-login-text,
+.signup-login-btn {
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: #172a4f;
+}
+
+.signup-absolute-background img {
+  z-index: -100;
+  position: absolute;
+  top: 12.5rem;
+  opacity: 0.25;
+}
+
+@media (max-width: 1200px) {
+  .signup-container {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+
+  .signup-main-picture img {
+    width: 31.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .signup-title {
+    font-size: 3.12rem;
+  }
+  .signup-main-picture {
+    /*position: absolute;*/
+    /*opacity: 0.5;*/
+    /*z-index: -100;*/
+    /*padding: 0;*/
+    display: none !important;
+  }
+  .signup-main-part {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .signup-email {
+    padding-left: 0px !important;
+  }
+  .signup-button-group {
+    padding-left: 0px !important;
+    align-items: center;
+  }
+
+  .signup-email-display {
+    padding-left: 0px !important;
+  }
+
+  .signup-absolute-background {
+    display: none !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .signup-title {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+  .signup-button-group button {
+    border-radius: 0.75rem;
+    width: 17.5rem;
+    height: 3.12rem;
+    border-radius: 1.56rem;
+    font-size: 1rem;
+  }
+  .signup-email input {
+    width: 17.5rem;
+    height: 3.12rem;
+  }
+  .signup-button-group hr {
+    width: 7.5rem;
+  }
+
+  .signup-login-text,
+  .signup-login-btn {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,96 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: btcex-api
+    container_name: btcex-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - API_PORT=3000
+      - WEB_SOCKET_SERVER_PORT=3001
+      - S3_ENDPOINT=http://s3
+      - S3_ACCESS_KEY_ID=minio
+      - S3_SECRET_ACCESS_KEY=minio123
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    volumes:
+      - .:/home/node/api
+      - node-modules:/home/node/api/node_modules
+    networks:
+      - api-network
+    depends_on:
+      - database
+      - mongo-setup
+      - s3
+      - redis
+
+  database:
+    image: mongo:4.4.6
+    container_name: btcex-database
+    restart: unless-stopped
+    command: --bind_ip_all --replSet rs0
+    env_file: .env
+    environment:
+      - MONGO_INITDB_DATABASE=$MONGODB_DATABASE
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-data:/data/db
+    networks:
+      - api-network
+
+  s3:
+    image: minio/minio:RELEASE.2021-06-07T21-40-51Z
+    container_name: btcex-s3
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    ports:
+      - "9000:9000"
+    volumes:
+      - s3-data:/data
+    command: server /data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  redis:
+    image: redis:6.2.5-alpine
+    container_name: btcex-redis
+    restart: unless-stopped
+    command: --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  mongo-setup:
+    image: mongo:4.4.9
+    container_name: btcex-mongo-setup
+    restart: on-failure
+    entrypoint:
+      - /scripts/mongo-setup.sh
+    volumes:
+      - ./scripts:/scripts
+    networks:
+      - api-network
+    depends_on:
+      - database
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  s3-data:
+  redis-data:
+  node-modules:

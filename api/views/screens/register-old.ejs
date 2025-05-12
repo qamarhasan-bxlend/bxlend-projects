@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Sign-up</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body class="justify-content-center align-items-center">
+
+<div class="container justify-content-center align-items-center">
+
+    <img src="/static/logo.png" alt="logo" id="logo">
+
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Sign up</h1>
+        </div>
+
+        <form autocomplete="off" action="<%= prefix; %>/interaction/<%= uid; %>/register" method="POST" class="card-body">
+            <input required type="text" name="login" placeholder="Email" autofocus="on" class="input">
+            <input required type="password" name="password" placeholder="Password" class="input">
+            <input required type="password" name="password_confirm" placeholder="Confirm Password" class="input">
+
+            <button type="submit" class="button button-success">Sign-up</button>
+        </form>
+
+        <div class="card-footer align-items-center">
+            <div>
+                <p>Already have an account?&nbsp;</p>
+                <a href="<%= prefix; %>/interaction/<%= uid; %>">Login</a>
+            </div>
+            <div>
+                <a href="<%= prefix; %>/interaction/<%= uid; %>/abort">[ Cancel ]</a>
+            </div>
+            <% if (client.tosUri || client.policyUri) { %>
+                <div>
+                    <% if (client.tosUri) { %>
+                        <a href="<%= client.tosUri; %>">[ Terms of Service ]</a>
+                    <% } %>
+                    <% if (client.tosUri && client.policyUri) { %>
+                        <p>&nbsp;.&nbsp;</p>
+                    <% } %>
+                    <% if (client.policyUri) { %>
+                        <a href="<%= client.policyUri; %>">[ Privacy Policy ]</a>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

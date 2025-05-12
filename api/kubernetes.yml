@@ -1,0 +1,557 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: btcex-api-config
+  labels:
+    app: btcex-api-config
+data:
+  NODE_ENV: '<NODE_ENV>'
+  RELEASE_ENV: '<RELEASE_ENV>'
+  API_PORT: '3000'
+  WEB_SOCKET_SERVER_PORT: '3001'
+  API_URI: 'https://<API_DOMAIN>'
+  AUTH_URI: 'https://<AUTH_DOMAIN>'
+  STORAGE_URI: '<STORAGE_URI>'
+  WEBSITE_DOMAIN: '<WEBSITE_DOMAIN>'
+  WEBSITE_CLIENT_URI: '<WEBSITE_CLIENT_URI>'
+  S3_ENDPOINT: '<S3_ENDPOINT>'
+  S3_BUCKET: '<S3_BUCKET>'
+  S3_REGION: '<S3_REGION>'
+  BITGO_API_URI: '<BITGO_API_URI>'
+  SCRYPT_WS_URI: '<SCRYPT_WS_URI>'
+  SCRYPT_HTTPS_URI: '<SCRYPT_HTTPS_URI>'
+  CRYPTOAPIS_API_URI: '<CRYPTOAPIS_API_URI>'
+  CRYPTOAPIS_WEBHOOK_URL: '<CRYPTOAPIS_WEBHOOK_URL>'
+  BITSTAMP_HTTP_API_URL: '<BITSTAMP_HTTP_API_URL>'
+  COIN_CONVERT_HTTP_API_URL: '<COIN_CONVERT_HTTP_API_URL>'
+
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: btcex-api-secret
+data:
+  MONGODB_URI: '<MONGODB_URI>'
+  REDIS_URI: '<REDIS_URI>'
+  SENTRY_DSN: '<SENTRY_DSN>'
+  VONAGE_APPLICATION_ID: '<VONAGE_APPLICATION_ID>'
+  VONAGE_API_KEY: '<VONAGE_API_KEY>'
+  VONAGE_API_SECRET: '<VONAGE_API_SECRET>'
+  MAILGUN_PRIVATE_API_KEY: '<MAILGUN_PRIVATE_API_KEY>'
+  MAILGUN_PUBLIC_VALIDATION_KEY: '<MAILGUN_PUBLIC_VALIDATION_KEY>'
+  MAILGUN_WEBHOOK_SIGNING_KEY: '<MAILGUN_WEBHOOK_SIGNING_KEY>'
+  MAILGUN_SENDING_DOMAIN: '<MAILGUN_SENDING_DOMAIN>'
+  WEBSITE_CLIENT_ID: '<WEBSITE_CLIENT_ID>'
+  WEBSITE_CLIENT_SECRET: '<WEBSITE_CLIENT_SECRET>'
+  WEBSITE_CLIENT_REDIRECT_URI: '<WEBSITE_CLIENT_REDIRECT_URI>'
+  ADMIN_CLIENT_ID: '<ADMIN_CLIENT_ID>'
+  ADMIN_CLIENT_SECRET: '<ADMIN_CLIENT_SECRET>'
+  ADMIN_CLIENT_REDIRECT_URI: '<ADMIN_CLIENT_REDIRECT_URI>'
+  S3_ACCESS_KEY_ID: '<S3_ACCESS_KEY_ID>'
+  S3_SECRET_ACCESS_KEY: '<S3_SECRET_ACCESS_KEY>'
+  BITGO_ACCESS_TOKEN: '<BITGO_ACCESS_TOKEN>'
+  SCRYPT_API_KEY: '<SCRYPT_API_KEY>'
+  SCRYPT_API_SECRET: '<SCRYPT_API_SECRET>'
+  CRYPTOAPIS_API_KEY: '<CRYPTOAPIS_API_KEY>'
+  CRYPTOAPIS_CALLBACK_SECRET_KEY: '<CRYPTOAPIS_CALLBACK_SECRET_KEY>'
+  CRYPTOAPIS_WALLET_ID: '<CRYPTOAPIS_WALLET_ID>'
+  BITSTAMP_API_KEY: '<BITSTAMP_API_KEY>'
+  BITSTAMP_API_SECRET: '<BITSTAMP_API_SECRET>'
+  VAULTODY_API_SECRET: '<VAULTODY_API_SECRET>'
+  VAULTODY_API_KEY: '<VAULTODY_API_KEY>'
+  VAULTODY_API_PASSPHRASE: '<VAULTODY_API_PASSPHRASE>'
+  VAULTODY_API_URI: '<VAULTODY_API_URI>'
+  VAULTODY_GENERAL_VAULT_ID: '<VAULTODY_GENERAL_VAULT_ID>'
+  VAULTODY_AUTOMATION_VAULT_ID: '<VAULTODY_AUTOMATION_VAULT_ID>'
+  VAULTODY_WEBHOOK_URL: '<VAULTODY_WEBHOOK_URL>'
+  VAULTODY_CALLBACK_SECRET_KEY: '<VAULTODY_CALLBACK_SECRET_KEY>'
+  TWILIO_ACCOUNT_SID: '<TWILIO_ACCOUNT_SID>'
+  TWILIO_AUTH_TOKEN: '<TWILIO_AUTH_TOKEN>'
+  TWILIO_PHONE: '<TWILIO_PHONE>'
+  HCAPTCHA_SECRET_KEY: '<HCAPTCHA_SECRET_KEY>'
+  HCAPTCHA_SITE_VERIFY_URL: '<HCAPTCHA_SITE_VERIFY_URL>'
+  KRAKEN_PRIVATE_KEY: '<KRAKEN_PRIVATE_KEY>'
+  KRAKEN_API_KEY: '<KRAKEN_API_KEY>'
+  KRAKEN_HTTP_API_URL: '<KRAKEN_HTTP_API_URL>'
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: btcex-api
+  labels:
+    app: btcex-api
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: btcex-api
+  template:
+    metadata:
+      labels:
+        app: btcex-api
+      annotations:
+        linkerd.io/inject: enabled
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: btcex-api-registry
+      containers:
+        - name: btcex-api
+          image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: '1000m'
+              memory: '500Mi'
+            requests:
+              cpu: '100m'
+              memory: '100Mi'
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: NODE_ENV
+            - name: RELEASE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: RELEASE_ENV
+            - name: API_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: API_PORT
+            - name: WEB_SOCKET_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: WEB_SOCKET_SERVER_PORT
+            - name: API_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: API_URI
+            - name: AUTH_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: AUTH_URI
+            - name: STORAGE_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: STORAGE_URI
+            - name: WEBSITE_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: WEBSITE_DOMAIN
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: MONGODB_URI
+            - name: REDIS_URI
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: REDIS_URI
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: SENTRY_DSN
+            - name: VONAGE_APPLICATION_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VONAGE_APPLICATION_ID
+            - name: VONAGE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VONAGE_API_KEY
+            - name: VONAGE_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VONAGE_API_SECRET
+            - name: MAILGUN_PRIVATE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: MAILGUN_PRIVATE_API_KEY
+            - name: MAILGUN_PUBLIC_VALIDATION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: MAILGUN_PUBLIC_VALIDATION_KEY
+            - name: MAILGUN_WEBHOOK_SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: MAILGUN_WEBHOOK_SIGNING_KEY
+            - name: MAILGUN_SENDING_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: MAILGUN_SENDING_DOMAIN
+            - name: WEBSITE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: WEBSITE_CLIENT_ID
+            - name: WEBSITE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: WEBSITE_CLIENT_SECRET
+            - name: WEBSITE_CLIENT_REDIRECT_URI
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: WEBSITE_CLIENT_REDIRECT_URI
+            - name: WEBSITE_CLIENT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: WEBSITE_CLIENT_URI
+            - name: ADMIN_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: ADMIN_CLIENT_ID
+            - name: ADMIN_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: ADMIN_CLIENT_SECRET
+            - name: ADMIN_CLIENT_REDIRECT_URI
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: ADMIN_CLIENT_REDIRECT_URI
+            - name: S3_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: S3_ENDPOINT
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: S3_BUCKET
+            - name: S3_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: S3_REGION
+            - name: S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: S3_ACCESS_KEY_ID
+            - name: S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: S3_SECRET_ACCESS_KEY
+            - name: BITGO_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: BITGO_ACCESS_TOKEN
+            - name: BITGO_API_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: BITGO_API_URI
+            - name: SCRYPT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: SCRYPT_API_KEY
+            - name: SCRYPT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: SCRYPT_API_SECRET
+            - name: BITSTAMP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: BITSTAMP_API_KEY
+            - name: BITSTAMP_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: BITSTAMP_API_SECRET
+            - name: SCRYPT_WS_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: SCRYPT_WS_URI
+            - name: SCRYPT_HTTPS_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: SCRYPT_HTTPS_URI
+            - name: CRYPTOAPIS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: CRYPTOAPIS_API_KEY
+            - name: CRYPTOAPIS_CALLBACK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: CRYPTOAPIS_CALLBACK_SECRET_KEY
+            - name: CRYPTOAPIS_WALLET_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: CRYPTOAPIS_WALLET_ID
+            - name: CRYPTOAPIS_API_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: CRYPTOAPIS_API_URI
+            - name: CRYPTOAPIS_WEBHOOK_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: CRYPTOAPIS_WEBHOOK_URL
+            - name: BITSTAMP_HTTP_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: BITSTAMP_HTTP_API_URL
+            - name: COIN_CONVERT_HTTP_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: btcex-api-config
+                  key: COIN_CONVERT_HTTP_API_URL
+            - name: VAULTODY_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_API_SECRET
+            - name: VAULTODY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_API_KEY
+            - name: VAULTODY_API_PASSPHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_API_PASSPHRASE
+            - name: VAULTODY_API_URI
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_API_URI
+            - name: VAULTODY_GENERAL_VAULT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_GENERAL_VAULT_ID
+            - name: VAULTODY_AUTOMATION_VAULT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_AUTOMATION_VAULT_ID
+            - name: VAULTODY_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_WEBHOOK_URL
+            - name: VAULTODY_CALLBACK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: VAULTODY_CALLBACK_SECRET_KEY        
+            - name: TWILIO_ACCOUNT_SID
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: TWILIO_ACCOUNT_SID     
+            - name: TWILIO_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: TWILIO_AUTH_TOKEN
+            - name: TWILIO_PHONE
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: TWILIO_PHONE
+            - name: HCAPTCHA_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: HCAPTCHA_SECRET_KEY
+            - name: HCAPTCHA_SITE_VERIFY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: HCAPTCHA_SITE_VERIFY_URL
+            - name: KRAKEN_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: KRAKEN_PRIVATE_KEY
+            - name: KRAKEN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: KRAKEN_API_KEY
+            - name: KRAKEN_HTTP_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: btcex-api-secret
+                  key: KRAKEN_HTTP_API_URL
+                  
+
+          ports:
+            - containerPort: 3000
+              name: api
+            - containerPort: 3001
+              name: ws
+          livenessProbe:
+            httpGet:
+              path: /
+              port: api
+            initialDelaySeconds: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: api
+            initialDelaySeconds: 3
+            timeoutSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: btcex-api
+  labels:
+    app: btcex-api
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+    service.beta.kubernetes.io/do-loadbalancer-enable-backend-keepalive: 'true'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: btcex-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: btcex-stream
+  labels:
+    app: btcex-stream
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+    service.beta.kubernetes.io/do-loadbalancer-enable-backend-keepalive: 'true'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3001
+      protocol: TCP
+      name: ws
+  selector:
+    app: btcex-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: btcex-api-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: <CLUSTER_ISSUER_NAME>
+    nginx.ingress.kubernetes.io/proxy-body-size: 110m
+    nginx.ingress.kubernetes.io/service-upstream: 'true'
+spec:
+  tls:
+    - hosts:
+        - <API_DOMAIN>
+      secretName: bxlend-api-tls
+  rules:
+    - host: <API_DOMAIN>
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: btcex-api
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: btcex-auth-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: <CLUSTER_ISSUER_NAME>
+    nginx.ingress.kubernetes.io/proxy-body-size: 110m
+    nginx.ingress.kubernetes.io/service-upstream: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: '/auth/$1'
+spec:
+  tls:
+    - hosts:
+        - <AUTH_DOMAIN>
+      secretName: bxlend-auth-tls
+  rules:
+    - host: <AUTH_DOMAIN>
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/(.*)'
+            backend:
+              service:
+                name: btcex-api
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: btcex-stream-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: <CLUSTER_ISSUER_NAME>
+    nginx.ingress.kubernetes.io/proxy-body-size: 110m
+    nginx.ingress.kubernetes.io/service-upstream: 'true'
+    nginx.org/websocket-services: btcex-stream
+spec:
+  tls:
+    - hosts:
+        - <STREAM_DOMAIN>
+      secretName: bxlend-stream-tls
+  rules:
+    - host: <STREAM_DOMAIN>
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: btcex-stream
+                port:
+                  number: 80

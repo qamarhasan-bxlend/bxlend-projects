@@ -1,0 +1,31 @@
+"use strict";
+
+const CURRENCY_KIND = {
+  FIAT: "FIAT",
+  CRYPTO: "CRYPTO",
+};
+
+const CURRENCY_NETWORK = {
+  BTC: "BTC",
+  ERC20: "ERC20",
+};
+
+const CURRENCY_NETWORK_EXPLORER = {
+  BTC: "BTC",
+  ERC20: "ETHERSCAN",
+};
+
+const CURRENCY_NETWORK_TO_MAIN_CURRENCY_CODE = {
+  GOERLI: "ETH", //TODO: CHange Goerli to ERC20 in production
+  BTC: "BTC",
+  DASHNET: "DASH",
+  NILE: "USDT",
+  TESTNET : "LTC"
+};
+
+module.exports = {
+  CURRENCY_KIND,
+  CURRENCY_NETWORK,
+  CURRENCY_NETWORK_EXPLORER,
+  CURRENCY_NETWORK_TO_MAIN_CURRENCY_CODE,
+};

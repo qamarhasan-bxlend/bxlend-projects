@@ -1,0 +1,290 @@
+name: Staging Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # Enable this when you are ready to run tests
+  # test:
+  #   name: Test
+
+  #   runs-on: ubuntu-latest
+
+  #   timeout-minutes: 10
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 14.17.5
+
+  # - name: Install packages
+  #   run: npm ci
+
+  # - name: Lint
+  #   run: npm run lint
+  #hdfgdfgdfgdfgdfgdg
+  # - name: Test
+  #   run: npm run test:ci
+
+  github_registry:
+    name: Push Docker image to GitHub Packages
+
+    # needs:
+    #   - test
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: echo "CUSTOM_TAG=stg-${{ github.sha }}" >> $GITHUB_ENV
+      - run: echo ${{ env.CUSTOM_TAG }}
+
+      # Setup keys folder
+      - name: Setup RSA private key
+        run: echo -n "${{ secrets.STAGING_PRIVATE_RSA_KEY_1 }}" > keys/jwks-rsa.key
+
+      - name: Setup RSA public key
+        run: echo -n "${{ secrets.STAGING_PUBLIC_RSA_KEY_1 }}" > keys/jwks-rsa.key.pub
+
+      - name: Push ${{ env.CUSTOM_TAG }} to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          repository: btcex-pro/api
+          tag_with_ref: false
+          tag_with_sha: false
+          tags: ${{ env.CUSTOM_TAG }}
+
+  deploy:
+    name: Deploy API to DigitalOcean Kubernetes
+    needs:
+      - github_registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Install doctl.
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - run: echo "CUSTOM_TAG=stg-${{ github.sha }}" >> $GITHUB_ENV
+      - run: echo ${{ env.CUSTOM_TAG }}
+
+      # Set Kubernetes variables.
+      - name: Update deployment file to use tag ${{ env.CUSTOM_TAG }}
+        run: sed -i 's|<IMAGE>|ghcr.io/btcex-pro/api:${{ env.CUSTOM_TAG }}|g' $GITHUB_WORKSPACE/kubernetes.yml
+        
+      - name: Set NODE_ENV
+        run: sed -i 's|<NODE_ENV>|development|g' $GITHUB_WORKSPACE/kubernetes.yml 
+
+      - name: Set RELEASE_ENV
+        run: sed -i 's|<RELEASE_ENV>|staging|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set API_DOMAIN
+        run: sed -i 's|<API_DOMAIN>|staging-api.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set AUTH_DOMAIN
+        run: sed -i 's|<AUTH_DOMAIN>|staging-auth.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set STREAM_DOMAIN
+        run: sed -i 's|<STREAM_DOMAIN>|staging-stream.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set STORAGE_URI
+        run: sed -i 's|<STORAGE_URI>|https://staging-static.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set WEBSITE_DOMAIN
+        run: sed -i 's|<WEBSITE_DOMAIN>|staging.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CLUSTER_ISSUER_NAME
+        run: sed -i 's|<CLUSTER_ISSUER_NAME>|letsencrypt-prod|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set MONGODB_URI
+        run: MONGODB_URI=$(echo -n "${{ secrets.STAGING_MONGODB_URI }}" | base64 -w 0) && sed -i 's|<MONGODB_URI>|'${MONGODB_URI}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set REDIS_URI
+        run: REDIS_URI=$(echo -n "${{ secrets.STAGING_REDIS_URI }}" | base64 -w 0) && sed -i 's|<REDIS_URI>|'${REDIS_URI}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set SENTRY_DSN
+        run: SENTRY_DSN=$(echo -n "${{ secrets.STAGING_SENTRY_DSN }}" | base64 -w 0) && sed -i 's|<SENTRY_DSN>|'${SENTRY_DSN}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VONAGE_APPLICATION_ID
+        run: VONAGE_APPLICATION_ID=$(echo -n "${{ secrets.STAGING_VONAGE_APPLICATION_ID }}" | base64 -w 0) && sed -i 's|<VONAGE_APPLICATION_ID>|'${VONAGE_APPLICATION_ID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VONAGE_API_KEY
+        run: VONAGE_API_KEY=$(echo -n "${{ secrets.STAGING_VONAGE_API_KEY }}" | base64 -w 0) && sed -i 's|<VONAGE_API_KEY>|'${VONAGE_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VONAGE_API_SECRET
+        run: VONAGE_API_SECRET=$(echo -n "${{ secrets.STAGING_VONAGE_API_SECRET }}" | base64 -w 0) && sed -i 's|<VONAGE_API_SECRET>|'${VONAGE_API_SECRET}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set MAILGUN_PRIVATE_API_KEY
+        run: MAILGUN_PRIVATE_API_KEY=$(echo -n "${{ secrets.STAGING_MAILGUN_PRIVATE_API_KEY }}" | base64 -w 0) && sed -i 's|<MAILGUN_PRIVATE_API_KEY>|'${MAILGUN_PRIVATE_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set MAILGUN_PUBLIC_VALIDATION_KEY
+        run: MAILGUN_PUBLIC_VALIDATION_KEY=$(echo -n "${{ secrets.STAGING_MAILGUN_PUBLIC_VALIDATION_KEY }}" | base64 -w 0) && sed -i 's|<MAILGUN_PUBLIC_VALIDATION_KEY>|'${MAILGUN_PUBLIC_VALIDATION_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set MAILGUN_WEBHOOK_SIGNING_KEY
+        run: MAILGUN_WEBHOOK_SIGNING_KEY=$(echo -n "${{ secrets.STAGING_MAILGUN_WEBHOOK_SIGNING_KEY }}" | base64 -w 0) && sed -i 's|<MAILGUN_WEBHOOK_SIGNING_KEY>|'${MAILGUN_WEBHOOK_SIGNING_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set MAILGUN_SENDING_DOMAIN
+        run: MAILGUN_SENDING_DOMAIN=$(echo -n "${{ secrets.STAGING_MAILGUN_SENDING_DOMAIN }}" | base64 -w 0) && sed -i 's|<MAILGUN_SENDING_DOMAIN>|'${MAILGUN_SENDING_DOMAIN}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set WEBSITE_CLIENT_ID
+        run: WEBSITE_CLIENT_ID=$(echo -n "${{ secrets.STAGING_WEBSITE_CLIENT_ID }}" | base64 -w 0) && sed -i 's|<WEBSITE_CLIENT_ID>|'${WEBSITE_CLIENT_ID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set WEBSITE_CLIENT_SECRET
+        run: WEBSITE_CLIENT_SECRET=$(echo -n "${{ secrets.STAGING_WEBSITE_CLIENT_SECRET }}" | base64 -w 0) && sed -i 's|<WEBSITE_CLIENT_SECRET>|'${WEBSITE_CLIENT_SECRET}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set WEBSITE_CLIENT_REDIRECT_URI
+        run: WEBSITE_CLIENT_REDIRECT_URI=$(echo -n "${{ secrets.STAGING_WEBSITE_CLIENT_REDIRECT_URI }}" | base64 -w 0) && sed -i 's|<WEBSITE_CLIENT_REDIRECT_URI>|'${WEBSITE_CLIENT_REDIRECT_URI}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set WEBSITE_CLIENT_URI
+        run: sed -i 's|<WEBSITE_CLIENT_URI>|staging.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set ADMIN_CLIENT_ID
+        run: ADMIN_CLIENT_ID=$(echo -n "${{ secrets.STAGING_ADMIN_CLIENT_ID }}" | base64 -w 0) && sed -i 's|<ADMIN_CLIENT_ID>|'${ADMIN_CLIENT_ID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set ADMIN_CLIENT_SECRET
+        run: ADMIN_CLIENT_SECRET=$(echo -n "${{ secrets.STAGING_ADMIN_CLIENT_SECRET }}" | base64 -w 0) && sed -i 's|<ADMIN_CLIENT_SECRET>|'${ADMIN_CLIENT_SECRET}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set ADMIN_CLIENT_REDIRECT_URI
+        run: ADMIN_CLIENT_REDIRECT_URI=$(echo -n "${{ secrets.STAGING_ADMIN_CLIENT_REDIRECT_URI }}" | base64 -w 0) && sed -i 's|<ADMIN_CLIENT_REDIRECT_URI>|'${ADMIN_CLIENT_REDIRECT_URI}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set S3_ENDPOINT
+        run: sed -i 's|<S3_ENDPOINT>|https://sgp1.digitaloceanspaces.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set S3_BUCKET
+        run: sed -i 's|<S3_BUCKET>|staging-btcex|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set S3_REGION
+        run: sed -i 's|<S3_REGION>|sgp1|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set S3_ACCESS_KEY_ID
+        run: S3_ACCESS_KEY_ID=$(echo -n "${{ secrets.STAGING_S3_ACCESS_KEY_ID }}" | base64 -w 0) && sed -i 's|<S3_ACCESS_KEY_ID>|'${S3_ACCESS_KEY_ID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set S3_SECRET_ACCESS_KEY
+        run: S3_SECRET_ACCESS_KEY=$(echo -n "${{ secrets.STAGING_S3_SECRET_ACCESS_KEY }}" | base64 -w 0) && sed -i 's|<S3_SECRET_ACCESS_KEY>|'${S3_SECRET_ACCESS_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set BITGO_ACCESS_TOKEN
+        run: BITGO_ACCESS_TOKEN=$(echo -n "${{ secrets.STAGING_BITGO_ACCESS_TOKEN }}" | base64 -w 0) && sed -i 's|<BITGO_ACCESS_TOKEN>|'${BITGO_ACCESS_TOKEN}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set BITGO_API_URI
+        run: BITGO_API_URI=$(echo -n "${{ secrets.STAGING_BITGO_API_URI }}") && sed -i 's|<BITGO_API_URI>|'${BITGO_API_URI}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set SCRYPT_API_KEY
+        run: SCRYPT_API_KEY=$(echo -n "${{ secrets.STAGING_SCRYPT_API_KEY }}" | base64 -w 0) && sed -i 's|<SCRYPT_API_KEY>|'${SCRYPT_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set SCRYPT_API_SECRET
+        run: SCRYPT_API_SECRET=$(echo -n "${{ secrets.STAGING_SCRYPT_API_SECRET }}" | base64 -w 0) && sed -i 's|<SCRYPT_API_SECRET>|'${SCRYPT_API_SECRET}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set SCRYPT_WS_URI
+        run: sed -i 's|<SCRYPT_WS_URI>|wss://demo.scrypt.swiss/ws/v1|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set SCRYPT_HTTPS_URI
+        run: sed -i 's|<SCRYPT_HTTPS_URI>|https://demo.scrypt.swiss|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CRYPTOAPIS_API_KEY
+        run: CRYPTOAPIS_API_KEY=$(echo -n "${{ secrets.STAGING_CRYPTOAPIS_API_KEY }}" | base64 -w 0) && sed -i 's|<CRYPTOAPIS_API_KEY>|'${CRYPTOAPIS_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CRYPTOAPIS_CALLBACK_SECRET_KEY
+        run: CRYPTOAPIS_CALLBACK_SECRET_KEY=$(echo -n "${{ secrets.STAGING_CRYPTOAPIS_CALLBACK_SECRET_KEY }}" | base64 -w 0) && sed -i 's|<CRYPTOAPIS_CALLBACK_SECRET_KEY>|'${CRYPTOAPIS_CALLBACK_SECRET_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CRYPTOAPIS_API_URI
+        run: sed -i 's|<CRYPTOAPIS_API_URI>|https://rest.cryptoapis.io/v2|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CRYPTOAPIS_WEBHOOK_URL
+        run: sed -i 's|<CRYPTOAPIS_WEBHOOK_URL>|https://api.bxlend.com|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set CRYPTOAPIS_WALLET_ID
+        run: CRYPTOAPIS_WALLET_ID=$(echo -n "${{ secrets.CRYPTOAPIS_WALLET_ID }}" | base64 -w 0) && sed -i 's|<CRYPTOAPIS_WALLET_ID>|'${CRYPTOAPIS_WALLET_ID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set BITSTAMP_API_KEY
+        run: BITSTAMP_API_KEY=$(echo -n "${{ secrets.STAGING_BITSTAMP_API_KEY }}" | base64 -w 0) && sed -i 's|<BITSTAMP_API_KEY>|'${BITSTAMP_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set BITSTAMP_API_SECRET
+        run: BITSTAMP_API_SECRET=$(echo -n "${{ secrets.STAGING_BITSTAMP_API_SECRET }}" | base64 -w 0) && sed -i 's|<BITSTAMP_API_SECRET>|'${BITSTAMP_API_SECRET}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_API_SECRET
+        run: VAULTODY_API_SECRET=$(echo -n "${{ secrets.VAULTODY_API_SECRET }}" | base64 -w 0) && sed -i 's|<VAULTODY_API_SECRET>|'${VAULTODY_API_SECRET}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_API_KEY
+        run: VAULTODY_API_KEY=$(echo -n "${{ secrets.VAULTODY_API_KEY }}" | base64 -w 0) && sed -i 's|<VAULTODY_API_KEY>|'${VAULTODY_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_API_PASSPHRASE
+        run: VAULTODY_API_PASSPHRASE=$(echo -n "${{ secrets.VAULTODY_API_PASSPHRASE }}" | base64 -w 0) && sed -i 's|<VAULTODY_API_PASSPHRASE>|'${VAULTODY_API_PASSPHRASE}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_API_URI
+        run: VAULTODY_API_URI=$(echo -n "${{ secrets.VAULTODY_API_URI }}" | base64 -w 0) && sed -i 's|<VAULTODY_API_URI>|'${VAULTODY_API_URI}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_GENERAL_VAULT_ID
+        run: VAULTODY_GENERAL_VAULT_ID=$(echo -n "${{ secrets.VAULTODY_GENERAL_VAULT_ID }}" | base64 -w 0) && sed -i "s|<VAULTODY_GENERAL_VAULT_ID>|${VAULTODY_GENERAL_VAULT_ID}|g" $GITHUB_WORKSPACE/kubernetes.yml
+      
+      #- name: Set VAULTODY_GENERAL_VAULT_ID
+       # run: VAULTODY_GENERAL_VAULT_ID=$(echo -n "" | base64 -w 0) && sed -i "s|<VAULTODY_GENERAL_VAULT_ID>|${VAULTODY_GENERAL_VAULT_ID}|g" $GITHUB_WORKSPACE/kubernetes.yml
+
+
+      - name: Set VAULTODY_AUTOMATION_VAULT_ID
+        run: VAULTODY_AUTOMATION_VAULT_ID=$(echo -n "${{ secrets.VAULTODY_AUTOMATION_VAULT_ID }}" | base64 -w 0) && sed -i 's|<VAULTODY_AUTOMATION_VAULT_ID>|'${VAULTODY_AUTOMATION_VAULT_ID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_WEBHOOK_URL
+        run: VAULTODY_WEBHOOK_URL=$(echo -n "${{ secrets.VAULTODY_WEBHOOK_URL }}" | base64 -w 0) && sed -i 's|<VAULTODY_WEBHOOK_URL>|'${VAULTODY_WEBHOOK_URL}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set VAULTODY_CALLBACK_SECRET_KEY
+        run: VAULTODY_CALLBACK_SECRET_KEY=$(echo -n "${{ secrets.VAULTODY_CALLBACK_SECRET_KEY }}" | base64 -w 0) && sed -i 's|<VAULTODY_CALLBACK_SECRET_KEY>|'${VAULTODY_CALLBACK_SECRET_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml  
+      
+      - name: Set TWILIO_ACCOUNT_SID
+        run: TWILIO_ACCOUNT_SID=$(echo -n "${{ secrets.STAGING_TWILIO_ACCOUNT_SID }}" | base64 -w 0) && sed -i 's|<TWILIO_ACCOUNT_SID>|'${TWILIO_ACCOUNT_SID}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set TWILIO_AUTH_TOKEN
+        run: TWILIO_AUTH_TOKEN=$(echo -n "${{ secrets.STAGING_TWILIO_AUTH_TOKEN }}" | base64 -w 0) && sed -i 's|<TWILIO_AUTH_TOKEN>|'${TWILIO_AUTH_TOKEN}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+     
+      - name: Set TWILIO_PHONE
+        run: TWILIO_PHONE=$(echo -n "${{ secrets.STAGING_TWILIO_PHONE }}" | base64 -w 0) && sed -i 's|<TWILIO_PHONE>|'${TWILIO_PHONE}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set HCAPTCHA_SECRET_KEY
+        run: HCAPTCHA_SECRET_KEY=$(echo -n "${{ secrets.HCAPTCHA_SECRET_KEY }}" | base64 -w 0) && sed -i 's|<HCAPTCHA_SECRET_KEY>|'${HCAPTCHA_SECRET_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set HCAPTCHA_SITE_VERIFY_URL
+        run: HCAPTCHA_SITE_VERIFY_URL=$(echo -n "${{ secrets.HCAPTCHA_SITE_VERIFY_URL }}" | base64 -w 0) && sed -i 's|<HCAPTCHA_SITE_VERIFY_URL>|'${HCAPTCHA_SITE_VERIFY_URL}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+  
+      - name: Set BITSTAMP_HTTP_API_URL
+        run: sed -i 's|<BITSTAMP_HTTP_API_URL>|https://www.bitstamp.net|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set KRAKEN_PRIVATE_KEY
+        run: KRAKEN_PRIVATE_KEY=$(echo -n "${{ secrets.STAGING_KRAKEN_PRIVATE_KEY }}" | base64 -w 0) && sed -i 's|<KRAKEN_PRIVATE_KEY>|'${KRAKEN_PRIVATE_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set KRAKEN_API_KEY
+        run: KRAKEN_API_KEY=$(echo -n "${{ secrets.STAGING_KRAKEN_API_KEY }}" | base64 -w 0) && sed -i 's|<KRAKEN_API_KEY>|'${KRAKEN_API_KEY}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set KRAKEN_HTTP_API_URL
+        run: KRAKEN_HTTP_API_URL=$(echo -n "${{ secrets.STAGING_KRAKEN_HTTP_API_URL }}" | base64 -w 0) && sed -i 's|<KRAKEN_HTTP_API_URL>|'${KRAKEN_HTTP_API_URL}'|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Set COIN_CONVERT_HTTP_API_URL
+        run: sed -i 's|<COIN_CONVERT_HTTP_API_URL>|https://api.coinconvert.net|g' $GITHUB_WORKSPACE/kubernetes.yml
+
+      - run: cat $GITHUB_WORKSPACE/kubernetes.yml
+
+      # Deploy to DigitalOcean Kubernetes.
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-sgp1-staging
+
+      - name: Upload credentials of your registry to your DigitalOcean Kubernetes cluster
+        run: kubectl create secret docker-registry btcex-api-registry --docker-server="ghcr.io" --docker-email="kevinng@bxlend.com" --docker-username="kevinng999" --docker-password="${{ secrets.REGISTRY_TOKEN }}" -o yaml --dry-run=client | kubectl replace --force -f -
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f $GITHUB_WORKSPACE/kubernetes.yml
+
+      - name: Verify deployment
+        run: kubectl rollout status deployment/btcex-api
